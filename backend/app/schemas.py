@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
@@ -52,17 +52,22 @@ class SceneSpec(BaseModel):
     output: OutputSettings = Field(default_factory=OutputSettings)
 
 
+class PromptRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    prompt: str = Field(min_length=3, max_length=2000)
+
+
 class ProjectCreateRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     name: str = Field(default="New project", min_length=1, max_length=120)
 
 
-class ProjectResponse(BaseModel):
-    id: str
-    name: str
-    created_at: str
-    updated_at: str
+class ProjectUpdateRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    name: str = Field(min_length=1, max_length=120)
 
 
 class JobResponse(BaseModel):
@@ -72,6 +77,7 @@ class JobResponse(BaseModel):
     created_at: str
     started_at: str | None = None
     finished_at: str | None = None
+    attempt: int = 1
     spec: dict[str, Any]
     output: str | None = None
     error: str | None = None

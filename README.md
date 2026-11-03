@@ -1,18 +1,22 @@
 # AI2Blender
 
-A starter for an AI-agent-driven 3D video workflow. The agent submits a validated scene description; a fixed Blender Python worker builds a stylized scene and renders it. Blender is the execution engine, not a GUI that the agent has to operate.
+AI2Blender is a local-first AI-to-3D video MVP. A planner converts a text prompt into a validated Scene Spec; a repository-owned Blender worker builds a stylized procedural scene and renders it. The agent never sends executable Python to the worker.
 
-## MVP scope
+## What works today
 
-This starter renders a simple, stylized fictional Vietnamese king greeting the camera. It demonstrates scene setup, materials, camera, lighting, a basic procedural character, a waving animation, and MP4 rendering. It is **not** a historically accurate character generator, production-grade rigging system, or general-purpose text-to-3D model generator.
+- Vietnamese/English prompt-to-Scene-Spec baseline (`POST /plan`). This is deterministic and does not call an external LLM.
+- Project create/list/rename/delete, with SQLite persistence.
+- Render job history persisted in SQLite, project association, retry for failed jobs, bounded concurrent Blender renders, timeout, worker log retrieval, MP4 preview/download, and ZIP artifact packaging.
+- Web Scene Studio at `/`: prompt planning, JSON editing, project selection, job history, render status, preview, retry, and artifact download.
+- Blender worker renders a simple procedural fictional Vietnamese king and palace with materials, lights, camera, a basic wave motion, and MP4 output.
 
-## Requirements
+This is a complete **local MVP**, not a production SaaS or a general text-to-3D model service. The current character is made from primitive geometry, the “rig” is a pair of arm pivots rather than a skeletal/weighted rig, and the planner is rules-based. It does not generate historically accurate assets, arbitrary character meshes, lip sync, motion capture, or multi-shot edits. Those require provider integrations and more capable assets/workers.
+
+## Requirements and run
 
 - Python 3.10+
-- Blender installed and available as `blender` on `PATH` (or set `BLENDER_BIN`)
-- Blender built with FFmpeg support for MP4 output
-
-## Run locally
+- Blender on `PATH` or set `BLENDER_BIN` to the Blender executable
+- Blender built with FFmpeg support
 
 ```bash
 python -m venv .venv
@@ -22,26 +26,40 @@ export BLENDER_BIN=/path/to/blender # optional if Blender is already on PATH
 uvicorn backend.app.main:app --reload
 ```
 
-Open `http://127.0.0.1:8000/` for the Scene Studio dashboard. It checks worker availability, submits a Scene Spec, polls render status, previews the MP4, and provides a download link. API documentation is at `http://127.0.0.1:8000/docs`.
+Open <http://127.0.0.1:8000/>. API docs are at `/docs`.
 
-You can also submit the included example directly:
+## API quickstart
+
+Plan a Vietnamese prompt:
+
+```bash
+curl -X POST http://127.0.0.1:8000/plan \\
+  -H 'Content-Type: application/json' \\
+  -d '{"prompt":"Vua hoạt hình chào camera trong cung điện, 8 giây, camera tiến gần"}'
+```
+
+Create a project:
+
+```bash
+curl -X POST http://127.0.0.1:8000/projects \\
+  -H 'Content-Type: application/json' -d '{"name":"Minh họa nhà vua"}'
+```
+
+Submit the included spec (optionally attach `?project_id=<uuid>`):
 
 ```bash
 curl -X POST http://127.0.0.1:8000/jobs \\
-  -H 'Content-Type: application/json' \\
-  --data @examples/king_scene.json
+  -H 'Content-Type: application/json' --data @examples/king_scene.json
 ```
 
-Poll the returned `id` at `GET /jobs/{id}`. When status is `succeeded`, download the render from `GET /jobs/{id}/output`.
+Poll `GET /jobs/{id}`. Download the MP4 at `/jobs/{id}/output`, logs at `/jobs/{id}/log`, or the complete artifact ZIP at `/jobs/{id}/package`. Retry a failed job with `POST /jobs/{id}/retry`.
 
-## Workflow
+## Configuration
 
-1. An agent turns a user prompt into the JSON contract in `backend/app/schemas.py`.
-2. The API validates the request and saves it as a job input.
-3. The API invokes the repository-owned Blender worker with the validated JSON. It does **not** execute model-generated Python.
-4. The worker creates the scene and animation, then renders an MP4.
-5. The dashboard polls job status and retrieves the result.
+- `BLENDER_BIN`: Blender executable path.
+- `AI2BLENDER_DATA_DIR`: artifact and default database directory (default `data/`).
+- `AI2BLENDER_DB_PATH`: optional SQLite file path override.
+- `AI2BLENDER_JOB_TIMEOUT`: render timeout in seconds (default 1200).
+- `AI2BLENDER_MAX_RENDERS`: concurrent Blender process limit (default 1).
 
-The initial API stores job state in memory and artifacts under `data/jobs/`; this is suitable for local development only. Before deployment, add persistent job storage, a queue, authentication, quotas, worker isolation, and artifact retention controls. Treat any future model/asset imports as untrusted input and run Blender in a restricted worker/container.
-
-See `docs/architecture.md` for the planned extension points.
+The job API currently runs Blender subprocesses from FastAPI background tasks. Keep it on a trusted local machine for this MVP. For deployment, use an external durable queue and isolated resource-limited workers, authentication, authorization, quotas, monitoring, and artifact retention. Do not execute agent-generated code or import untrusted Blender files in the API process.
