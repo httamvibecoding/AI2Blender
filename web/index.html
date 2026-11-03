@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#10131c">
+  <title>AI2Blender — Scene Studio</title>
+  <style>
+    :root{color-scheme:dark;--bg:#10131c;--panel:#191e2a;--panel2:#202737;--line:#30394a;--text:#f2f5fb;--muted:#9ba8bc;--cyan:#45d5e8;--orange:#ff9b52;--green:#57d69a;--red:#ff737d}
+    *{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 70% -20%,#263852 0,transparent 42%),var(--bg);color:var(--text);font:15px/1.5 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;min-height:100vh}
+    header{height:70px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 clamp(18px,4vw,56px);background:#10131cdd;position:sticky;top:0;backdrop-filter:blur(14px);z-index:2}
+    .brand{display:flex;align-items:center;gap:12px;font-weight:750;letter-spacing:.2px}.logo{width:34px;height:34px;border-radius:10px;background:linear-gradient(145deg,#45d5e8,#3876dc);display:grid;place-items:center;color:#07141e;font-weight:900}.brand span{color:var(--cyan)}.header-tag{color:var(--muted);font-size:13px}
+    main{max-width:1180px;margin:0 auto;padding:56px 24px 72px}.eyebrow{color:var(--cyan);font-size:12px;text-transform:uppercase;letter-spacing:1.6px;font-weight:750}.intro{max-width:720px;margin-bottom:32px}.intro h1{font-size:clamp(34px,5vw,56px);line-height:1.08;letter-spacing:-1.8px;margin:12px 0}.intro p{color:var(--muted);font-size:17px;margin:0}
+    .layout{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(320px,.9fr);gap:20px;align-items:start}.card{background:linear-gradient(160deg,#1b2230,#171c27);border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:0 20px 70px #0002}.card-head{padding:18px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}.card-head h2{font-size:16px;margin:0}.step{color:var(--muted);font-size:12px}.card-body{padding:20px}.label-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}.label-row label{font-weight:650}.hint{color:var(--muted);font-size:12px}
+    textarea{width:100%;height:380px;resize:vertical;border:1px solid #39465b;border-radius:10px;padding:16px;background:#111722;color:#dce8f8;font:13px/1.65 ui-monospace,SFMono-Regular,Consolas,monospace;outline:none}textarea:focus{border-color:var(--cyan);box-shadow:0 0 0 3px #45d5e81c}.actions{display:flex;gap:10px;margin-top:14px;align-items:center}.button{appearance:none;border:0;border-radius:9px;padding:11px 16px;font-weight:720;cursor:pointer;transition:transform .15s,filter .15s}.button:hover{filter:brightness(1.08);transform:translateY(-1px)}.button:disabled{opacity:.55;cursor:wait;transform:none}.primary{background:linear-gradient(110deg,#ff9b52,#ff7449);color:#25130a;flex:1}.secondary{background:#293344;color:var(--text);border:1px solid #3a4659}
+    .preview{min-height:280px;background:linear-gradient(140deg,#252d3b,#323a46);display:grid;place-items:center;position:relative;overflow:hidden}.preview:before{content:"";position:absolute;width:220px;height:220px;border-radius:50%;background:#ffb26020;filter:blur(45px);top:22%;left:30%}.preview-placeholder{text-align:center;color:#b8c2d2;z-index:1;padding:26px}.preview-icon{font-size:48px;display:block;margin-bottom:10px;filter:drop-shadow(0 10px 20px #0006)}video{width:100%;height:auto;max-height:440px;background:#0b0d12;display:block}.status-wrap{padding:18px 20px}.status-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}.status-title{font-weight:700}.badge{border:1px solid var(--line);border-radius:99px;padding:4px 10px;color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.6px}.badge.running{color:var(--orange);border-color:#9b653b}.badge.succeeded{color:var(--green);border-color:#367b60}.badge.failed{color:var(--red);border-color:#87454d}.progress{height:5px;border-radius:8px;background:#30394a;overflow:hidden}.progress i{display:block;width:0;height:100%;background:linear-gradient(90deg,var(--cyan),#6382ff);transition:width .5s}.status-message{color:var(--muted);font-size:13px;margin:10px 0 0;overflow-wrap:anywhere}.meta{border-top:1px solid var(--line);padding:14px 20px;color:var(--muted);font-size:12px}.meta strong{color:#d9e3f1;font-weight:600}.health{display:inline-flex;align-items:center;gap:7px}.dot{width:7px;height:7px;border-radius:50%;background:#8290a4}.dot.ok{background:var(--green);box-shadow:0 0 10px #57d69a88}.dot.bad{background:var(--red)}.download{display:none;margin-top:12px;width:100%;text-align:center;text-decoration:none}.download.show{display:block}.footnote{color:var(--muted);font-size:12px;margin:22px 2px 0}.error{color:var(--red)}
+    @media(max-width:800px){main{padding-top:36px}.layout{grid-template-columns:1fr}.preview{min-height:240px}textarea{height:300px}.header-tag{display:none}}
+  </style>
+</head>
+<body>
+  <header><div class="brand"><div class="logo">3D</div><div>AI2<span>Blender</span></div></div><div class="header-tag">AI scene orchestration · Blender render worker</div></header>
+  <main>
+    <section class="intro"><div class="eyebrow">Scene Studio · MVP</div><h1>Từ mô tả đến video 3D.</h1><p>Gửi Scene Spec cho Blender worker, theo dõi render và xem video ngay tại đây. Agent chỉ gửi dữ liệu được kiểm tra — không thực thi Python tùy ý.</p></section>
+    <section class="layout">
+      <article class="card">
+        <div class="card-head"><h2>Scene Spec</h2><span class="step">01 · Cấu hình cảnh</span></div>
+        <div class="card-body">
+          <div class="label-row"><label for="spec">Yêu cầu cảnh dạng JSON</label><span class="hint">Schema được kiểm tra ở API</span></div>
+          <textarea id="spec" spellcheck="false" aria-label="Scene Spec JSON"></textarea>
+          <div class="actions"><button id="render" class="button primary">▶&nbsp; Tạo video</button><button id="reset" class="button secondary">Mẫu</button></div>
+          <p class="footnote">MVP hiện tạo nhân vật vua hoạt hình procedural, chuyển động vẫy tay và bối cảnh cung điện đơn giản.</p>
+        </div>
+      </article>
+      <article class="card">
+        <div class="card-head"><h2>Kết quả render</h2><span class="step">02 · Preview</span></div>
+        <div id="preview" class="preview"><div class="preview-placeholder"><span class="preview-icon">🎬</span><strong>Video sẽ xuất hiện ở đây</strong><div class="hint" style="margin-top:5px">Gửi cấu hình để bắt đầu một job render</div></div></div>
+        <div class="status-wrap"><div class="status-top"><span id="statusTitle" class="status-title">Chưa có job</span><span id="badge" class="badge">idle</span></div><div class="progress"><i id="progress"></i></div><p id="message" class="status-message">Sẵn sàng nhận Scene Spec.</p><a id="download" class="button secondary download" href="#">Tải MP4</a></div>
+        <div class="meta"><span class="health"><i id="healthDot" class="dot"></i><span id="healthText">Đang kiểm tra Blender worker…</span></span><span id="jobMeta" style="float:right"></span></div>
+      </article>
+    </section>
+  </main>
+  <script>
+    const example = {
+      title: "A fictional Vietnamese king greets the camera",
+      style: "3D cartoon, soft shapes, warm cinematic lighting",
+      scene: { duration_seconds: 6, fps: 24 },
+      camera: { shot: "medium", movement: "static" },
+      animation: { action: "wave", emotion: "warm and dignified" },
+      output: { resolution: [1280, 720], format: "mp4" }
+    };
+    const editor = document.querySelector("#spec");
+    const renderButton = document.querySelector("#render");
+    const badge = document.querySelector("#badge");
+    const message = document.querySelector("#message");
+    const progress = document.querySelector("#progress");
+    const download = document.querySelector("#download");
+    let pollTimer;
+    editor.value = JSON.stringify(example, null, 2);
+
+    function setStatus(status, text, percent) {
+      badge.textContent = status;
+      badge.className = `badge ${status}`;
+      message.textContent = text;
+      progress.style.width = `${percent}%`;
+      document.querySelector("#statusTitle").textContent = status === "running" ? "Blender đang render" : status === "queued" ? "Job đã được xếp hàng" : status === "succeeded" ? "Render hoàn tất" : status === "failed" ? "Render thất bại" : "Chưa có job";
+    }
+
+    async function checkHealth() {
+      const dot = document.querySelector("#healthDot");
+      const text = document.querySelector("#healthText");
+      try {
+        const response = await fetch("/health");
+        const health = await response.json();
+        dot.className = `dot ${health.blender_available ? "ok" : "bad"}`;
+        text.textContent = health.blender_available ? "Blender worker sẵn sàng" : "Không tìm thấy Blender — cấu hình BLENDER_BIN";
+      } catch (_) {
+        dot.className = "dot bad";
+        text.textContent = "Không kết nối được API";
+      }
+    }
+
+    async function pollJob(id) {
+      try {
+        const response = await fetch(`/jobs/${id}`);
+        const job = await response.json();
+        if (!response.ok) throw new Error(job.detail || "Không đọc được trạng thái job");
+        document.querySelector("#jobMeta").textContent = `Job ${id.slice(0, 8)}`;
+        if (job.status === "succeeded") {
+          clearInterval(pollTimer);
+          renderButton.disabled = false;
+          setStatus("succeeded", "Video đã render thành công.", 100);
+          download.href = `/jobs/${id}/output`;
+          download.classList.add("show");
+          document.querySelector("#preview").innerHTML = `<video controls autoplay loop src="/jobs/${id}/output"></video>`;
+        } else if (job.status === "failed") {
+          clearInterval(pollTimer);
+          renderButton.disabled = false;
+          setStatus("failed", job.error || "Blender worker không thể hoàn tất render.", 100);
+        } else {
+          setStatus(job.status, job.status === "running" ? "Đang dựng scene và render video…" : "Đang chờ Blender worker…", job.status === "running" ? 55 : 12);
+        }
+      } catch (error) {
+        clearInterval(pollTimer);
+        renderButton.disabled = false;
+        setStatus("failed", error.message, 100);
+      }
+    }
+
+    renderButton.addEventListener("click", async () => {
+      clearInterval(pollTimer);
+      download.classList.remove("show");
+      try {
+        const sceneSpec = JSON.parse(editor.value);
+        renderButton.disabled = true;
+        setStatus("queued", "Đang gửi Scene Spec đến API…", 8);
+        const response = await fetch("/jobs", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(sceneSpec) });
+        const result = await response.json();
+        if (!response.ok) {
+          const detail = Array.isArray(result.detail) ? result.detail.map(item => `${item.loc.join(".")}: ${item.msg}`).join("; ") : result.detail;
+          throw new Error(detail || "Không tạo được job");
+        }
+        await pollJob(result.id);
+        pollTimer = setInterval(() => pollJob(result.id), 2000);
+      } catch (error) {
+        renderButton.disabled = false;
+        setStatus("failed", error instanceof SyntaxError ? "JSON không hợp lệ. Hãy kiểm tra dấu ngoặc và dấu phẩy." : error.message, 100);
+      }
+    });
+    document.querySelector("#reset").addEventListener("click", () => { editor.value = JSON.stringify(example, null, 2); });
+    checkHealth();
+  </script>
+</body>
+</html>

@@ -14,10 +14,11 @@ from .schemas import SceneSpec
 
 ROOT = Path(__file__).resolve().parents[2]
 WORKER = ROOT / "blender" / "worker.py"
+WEB_INDEX = ROOT / "web" / "index.html"
 DATA_DIR = Path(os.environ.get("AI2BLENDER_DATA_DIR", ROOT / "data" / "jobs")).resolve()
 BLENDER_BIN = os.environ.get("BLENDER_BIN") or shutil.which("blender")
 
-app = FastAPI(title="AI2Blender", version="0.1.0", description="Validated scene specs rendered by a Blender worker.")
+app = FastAPI(title="AI2Blender", version="0.2.0", description="Validated scene specs rendered by a Blender worker.")
 # In-memory MVP state: replace with a persistent database/queue for deployment.
 JOBS: dict[str, dict[str, Any]] = {}
 
@@ -59,6 +60,13 @@ async def run_blender_job(job_id: str, job_dir: Path, spec_path: Path) -> None:
         record["error"] = f"Could not run Blender: {exc}"
     finally:
         record["finished_at"] = utc_now()
+
+
+@app.get("/", include_in_schema=False)
+async def dashboard() -> FileResponse:
+    if not WEB_INDEX.is_file():
+        raise HTTPException(status_code=404, detail="Dashboard files are missing")
+    return FileResponse(WEB_INDEX, media_type="text/html")
 
 
 @app.get("/health")
