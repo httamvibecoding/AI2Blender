@@ -1,4 +1,4 @@
-from typing import Literal
+from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
@@ -50,3 +50,28 @@ class SceneSpec(BaseModel):
     camera: CameraSettings = Field(default_factory=CameraSettings)
     animation: AnimationSettings = Field(default_factory=AnimationSettings)
     output: OutputSettings = Field(default_factory=OutputSettings)
+
+
+class ProjectCreateRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    name: str = Field(default="New project", min_length=1, max_length=120)
+
+
+class ProjectResponse(BaseModel):
+    id: str
+    name: str
+    created_at: str
+    updated_at: str
+
+
+class JobResponse(BaseModel):
+    id: str
+    project_id: str | None = None
+    status: str
+    created_at: str
+    started_at: str | None = None
+    finished_at: str | None = None
+    spec: dict[str, Any]
+    output: str | None = None
+    error: str | None = None
