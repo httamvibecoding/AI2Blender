@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
@@ -20,7 +22,7 @@ class CameraSettings(BaseModel):
 class AnimationSettings(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
-    action: Literal["wave"] = "wave"
+    action: Literal["wave", "bow", "salute", "nod", "turn", "point", "greet"] = "wave"
     emotion: str = Field(default="warm and dignified", min_length=1, max_length=120)
 
 
@@ -39,6 +41,17 @@ class OutputSettings(BaseModel):
         return value
 
 
+class ShotSpec(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    title: str = Field(default="A shot", min_length=1, max_length=160)
+    style: str = Field(default="3D cartoon, soft shapes, warm cinematic lighting", min_length=1, max_length=240)
+    scene: SceneSettings = Field(default_factory=SceneSettings)
+    camera: CameraSettings = Field(default_factory=CameraSettings)
+    animation: AnimationSettings = Field(default_factory=AnimationSettings)
+    output: OutputSettings = Field(default_factory=OutputSettings)
+
+
 class SceneSpec(BaseModel):
     """Allow-listed scene instructions; never accept executable Blender code here."""
 
@@ -50,6 +63,8 @@ class SceneSpec(BaseModel):
     camera: CameraSettings = Field(default_factory=CameraSettings)
     animation: AnimationSettings = Field(default_factory=AnimationSettings)
     output: OutputSettings = Field(default_factory=OutputSettings)
+    transition: Literal["cut", "fade", "cross_dissolve"] = "cut"
+    shots: list[ShotSpec] | None = None
 
 
 class PromptRequest(BaseModel):

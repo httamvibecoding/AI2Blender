@@ -3,131 +3,373 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#10131c">
+  <meta name="theme-color" content="#0d1320">
   <title>AI2Blender — Scene Studio</title>
   <style>
-    :root{color-scheme:dark;--bg:#10131c;--panel:#191e2a;--panel2:#202737;--line:#30394a;--text:#f2f5fb;--muted:#9ba8bc;--cyan:#45d5e8;--orange:#ff9b52;--green:#57d69a;--red:#ff737d}
-    *{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 70% -20%,#263852 0,transparent 42%),var(--bg);color:var(--text);font:15px/1.5 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;min-height:100vh}
-    header{height:70px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 clamp(18px,4vw,56px);background:#10131cdd;position:sticky;top:0;backdrop-filter:blur(14px);z-index:2}
-    .brand{display:flex;align-items:center;gap:12px;font-weight:750;letter-spacing:.2px}.logo{width:34px;height:34px;border-radius:10px;background:linear-gradient(145deg,#45d5e8,#3876dc);display:grid;place-items:center;color:#07141e;font-weight:900}.brand span{color:var(--cyan)}.header-tag{color:var(--muted);font-size:13px}
-    main{max-width:1180px;margin:0 auto;padding:56px 24px 72px}.eyebrow{color:var(--cyan);font-size:12px;text-transform:uppercase;letter-spacing:1.6px;font-weight:750}.intro{max-width:720px;margin-bottom:32px}.intro h1{font-size:clamp(34px,5vw,56px);line-height:1.08;letter-spacing:-1.8px;margin:12px 0}.intro p{color:var(--muted);font-size:17px;margin:0}
-    .layout{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(320px,.9fr);gap:20px;align-items:start}.card{background:linear-gradient(160deg,#1b2230,#171c27);border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:0 20px 70px #0002}.card-head{padding:18px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}.card-head h2{font-size:16px;margin:0}.step{color:var(--muted);font-size:12px}.card-body{padding:20px}.label-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}.label-row label{font-weight:650}.hint{color:var(--muted);font-size:12px}
-    textarea{width:100%;height:380px;resize:vertical;border:1px solid #39465b;border-radius:10px;padding:16px;background:#111722;color:#dce8f8;font:13px/1.65 ui-monospace,SFMono-Regular,Consolas,monospace;outline:none}textarea:focus{border-color:var(--cyan);box-shadow:0 0 0 3px #45d5e81c}.actions{display:flex;gap:10px;margin-top:14px;align-items:center}.button{appearance:none;border:0;border-radius:9px;padding:11px 16px;font-weight:720;cursor:pointer;transition:transform .15s,filter .15s}.button:hover{filter:brightness(1.08);transform:translateY(-1px)}.button:disabled{opacity:.55;cursor:wait;transform:none}.primary{background:linear-gradient(110deg,#ff9b52,#ff7449);color:#25130a;flex:1}.secondary{background:#293344;color:var(--text);border:1px solid #3a4659}
-    .preview{min-height:280px;background:linear-gradient(140deg,#252d3b,#323a46);display:grid;place-items:center;position:relative;overflow:hidden}.preview:before{content:"";position:absolute;width:220px;height:220px;border-radius:50%;background:#ffb26020;filter:blur(45px);top:22%;left:30%}.preview-placeholder{text-align:center;color:#b8c2d2;z-index:1;padding:26px}.preview-icon{font-size:48px;display:block;margin-bottom:10px;filter:drop-shadow(0 10px 20px #0006)}video{width:100%;height:auto;max-height:440px;background:#0b0d12;display:block}.status-wrap{padding:18px 20px}.status-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}.status-title{font-weight:700}.badge{border:1px solid var(--line);border-radius:99px;padding:4px 10px;color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.6px}.badge.running{color:var(--orange);border-color:#9b653b}.badge.succeeded{color:var(--green);border-color:#367b60}.badge.failed{color:var(--red);border-color:#87454d}.progress{height:5px;border-radius:8px;background:#30394a;overflow:hidden}.progress i{display:block;width:0;height:100%;background:linear-gradient(90deg,var(--cyan),#6382ff);transition:width .5s}.status-message{color:var(--muted);font-size:13px;margin:10px 0 0;overflow-wrap:anywhere}.meta{border-top:1px solid var(--line);padding:14px 20px;color:var(--muted);font-size:12px}.meta strong{color:#d9e3f1;font-weight:600}.health{display:inline-flex;align-items:center;gap:7px}.dot{width:7px;height:7px;border-radius:50%;background:#8290a4}.dot.ok{background:var(--green);box-shadow:0 0 10px #57d69a88}.dot.bad{background:var(--red)}.download{display:none;margin-top:12px;width:100%;text-align:center;text-decoration:none}.download.show{display:block}.footnote{color:var(--muted);font-size:12px;margin:22px 2px 0}.error{color:var(--red)}
-    @media(max-width:800px){main{padding-top:36px}.layout{grid-template-columns:1fr}.preview{min-height:240px}textarea{height:300px}.header-tag{display:none}}
+    :root {
+      --bg:#0d1320; --panel:#121b2a; --panel-2:#172332; --line:#2a3d54; --text:#edf4ff; --muted:#9fb3cf;
+      --cyan:#6fe7ff; --blue:#5a8dff; --green:#70f1a8; --orange:#ffb36b; --red:#ff7d7d;
+    }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:Inter,Segoe UI,system-ui,sans-serif; background:linear-gradient(180deg,#0d1320 0%, #0e1726 60%, #0f1521 100%); color:var(--text); }
+    a { color:inherit; text-decoration:none; }
+    button, input, select, textarea { font:inherit; }
+    .shell { display:grid; grid-template-columns: 280px 1fr; min-height:100vh; }
+    .sidebar { background:rgba(10,17,28,0.96); border-right:1px solid var(--line); padding:22px 18px; }
+    .brand { display:flex; align-items:center; gap:12px; font-size:18px; font-weight:800; letter-spacing:.2px; margin-bottom:24px; }
+    .logo { width:42px; height:42px; display:grid; place-items:center; border-radius:12px; background:linear-gradient(135deg,var(--cyan),var(--blue)); color:#09131c; font-weight:900; }
+    .nav-section { margin-top:22px; }
+    .nav-label { font-size:11px; color:var(--muted); letter-spacing:1.4px; text-transform:uppercase; margin:0 0 10px; }
+    .project-list, .job-list { display:flex; flex-direction:column; gap:8px; }
+    .project-item, .job-item { border:1px solid var(--line); background:var(--panel); border-radius:10px; padding:10px 12px; cursor:pointer; }
+    .project-item.active { border-color: rgba(111,231,255,0.6); box-shadow:0 0 0 1px rgba(111,231,255,.2); }
+    .meta { color:var(--muted); font-size:12px; }
+    .content { padding:28px 30px 40px; }
+    .topbar { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:20px; }
+    .title h1 { margin:0; font-size:clamp(28px,4vw,42px); }
+    .title p { margin:6px 0 0; color:var(--muted); }
+    .actions { display:flex; gap:10px; flex-wrap:wrap; }
+    .btn { border:1px solid var(--line); background:#1a2a3d; color:var(--text); padding:10px 14px; border-radius:10px; cursor:pointer; }
+    .btn.primary { background:linear-gradient(135deg,var(--orange),#ff8741); color:#17110c; border:none; font-weight:700; }
+    .layout { display:grid; grid-template-columns: minmax(0,1.1fr) minmax(320px,.9fr); gap:18px; }
+    .panel { background:linear-gradient(180deg,var(--panel) 0%, var(--panel-2) 100%); border:1px solid var(--line); border-radius:16px; overflow:hidden; }
+    .panel-header { padding:16px 18px; border-bottom:1px solid var(--line); display:flex; justify-content:space-between; align-items:center; }
+    .panel-header h2 { margin:0; font-size:16px; }
+    .panel-body { padding:18px; }
+    textarea { width:100%; min-height:340px; border:1px solid var(--line); border-radius:12px; background:#0d1725; color:var(--text); resize:vertical; padding:16px; line-height:1.55; }
+    .controls { display:flex; gap:10px; align-items:center; margin-top:12px; flex-wrap:wrap; }
+    select, input[type="text"] { width:100%; background:#0d1725; border:1px solid var(--line); border-radius:10px; color:var(--text); padding:10px 12px; }
+    .status-box { display:flex; gap:12px; align-items:center; justify-content:space-between; margin-top:14px; }
+    .badge { display:inline-flex; align-items:center; border-radius:999px; padding:6px 10px; min-width:88px; justify-content:center; font-size:11px; font-weight:700; letter-spacing:.8px; text-transform:uppercase; border:1px solid var(--line); }
+    .badge.queued { background:rgba(91,141,255,.12); color:#a9c0ff; border-color:rgba(91,141,255,.35); }
+    .badge.running { background:rgba(255,179,107,.12); color:#ffc483; border-color:rgba(255,179,107,.35); }
+    .badge.succeeded { background:rgba(112,241,168,.12); color:#98f4b7; border-color:rgba(112,241,168,.35); }
+    .badge.failed { background:rgba(255,125,125,.12); color:#ffafb0; border-color:rgba(255,125,125,.35); }
+    .progress { height:8px; background:rgba(255,255,255,.08); border-radius:999px; overflow:hidden; margin-top:12px; }
+    .progress-bar { width:0; height:100%; background:linear-gradient(90deg, var(--cyan), var(--blue)); border-radius:inherit; transition:width .25s ease; }
+    .job-details { color:var(--muted); font-size:13px; line-height:1.7; }
+    .preview { min-height:300px; background:linear-gradient(135deg,#1d2a3b,#111c2d); border:1px solid var(--line); border-radius:12px; display:flex; align-items:center; justify-content:center; overflow:hidden; }
+    .preview.placeholder { color:var(--muted); text-align:center; }
+    .preview video { width:100%; max-height:440px; display:block; background:#0e141d; }
+    .history-grid { display:grid; gap:12px; }
+    .history-item { border:1px solid var(--line); border-radius:10px; background:#122033; padding:12px; }
+    .history-row { display:flex; justify-content:space-between; gap:8px; align-items:start; }
+    .history-name { font-weight:600; }
+    .history-status { font-size:12px; color:var(--muted); }
+    .link-row { margin-top:8px; display:flex; gap:8px; flex-wrap:wrap; }
+    .chip { display:inline-flex; padding:4px 8px; border-radius:999px; border:1px solid var(--line); color:var(--muted); font-size:11px; }
+    @media (max-width: 980px) { .shell { grid-template-columns: 1fr; } .sidebar { border-right:0; border-bottom:1px solid var(--line); } .layout { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>
-  <header><div class="brand"><div class="logo">3D</div><div>AI2<span>Blender</span></div></div><div class="header-tag">AI scene orchestration · Blender render worker</div></header>
-  <main>
-    <section class="intro"><div class="eyebrow">Scene Studio · MVP</div><h1>Từ mô tả đến video 3D.</h1><p>Gửi Scene Spec cho Blender worker, theo dõi render và xem video ngay tại đây. Agent chỉ gửi dữ liệu được kiểm tra — không thực thi Python tùy ý.</p></section>
-    <section class="layout">
-      <article class="card">
-        <div class="card-head"><h2>Scene Spec</h2><span class="step">01 · Cấu hình cảnh</span></div>
-        <div class="card-body">
-          <div class="label-row"><label for="spec">Yêu cầu cảnh dạng JSON</label><span class="hint">Schema được kiểm tra ở API</span></div>
-          <textarea id="spec" spellcheck="false" aria-label="Scene Spec JSON"></textarea>
-          <div class="actions"><button id="render" class="button primary">▶&nbsp; Tạo video</button><button id="reset" class="button secondary">Mẫu</button></div>
-          <p class="footnote">MVP hiện tạo nhân vật vua hoạt hình procedural, chuyển động vẫy tay và bối cảnh cung điện đơn giản.</p>
+  <div class="shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="logo">3D</div>
+        <div>AI2Blender</div>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Projects</div>
+        <div class="actions" style="margin-bottom:12px;">
+          <button class="btn primary" id="createProjectBtn">+ New</button>
         </div>
-      </article>
-      <article class="card">
-        <div class="card-head"><h2>Kết quả render</h2><span class="step">02 · Preview</span></div>
-        <div id="preview" class="preview"><div class="preview-placeholder"><span class="preview-icon">🎬</span><strong>Video sẽ xuất hiện ở đây</strong><div class="hint" style="margin-top:5px">Gửi cấu hình để bắt đầu một job render</div></div></div>
-        <div class="status-wrap"><div class="status-top"><span id="statusTitle" class="status-title">Chưa có job</span><span id="badge" class="badge">idle</span></div><div class="progress"><i id="progress"></i></div><p id="message" class="status-message">Sẵn sàng nhận Scene Spec.</p><a id="download" class="button secondary download" href="#">Tải MP4</a></div>
-        <div class="meta"><span class="health"><i id="healthDot" class="dot"></i><span id="healthText">Đang kiểm tra Blender worker…</span></span><span id="jobMeta" style="float:right"></span></div>
-      </article>
-    </section>
-  </main>
+        <div id="projectList" class="project-list"></div>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Recent renders</div>
+        <div id="jobList" class="job-list"></div>
+      </div>
+    </aside>
+
+    <main class="content">
+      <div class="topbar">
+        <div class="title">
+          <h1>Scene Studio</h1>
+          <p>Prompt-to-scene planning, multi-shot editing, render history and artifact download.</p>
+        </div>
+        <div class="actions">
+          <button class="btn" id="planBtn">Generate plan</button>
+          <button class="btn primary" id="renderBtn">Render video</button>
+        </div>
+      </div>
+
+      <div class="layout">
+        <section class="panel">
+          <div class="panel-header"><h2>Prompt / Spec</h2><span id="projectNameTag" class="chip">No project</span></div>
+          <div class="panel-body">
+            <div style="display:grid; gap:12px; margin-bottom:12px;">
+              <input id="projectNameInput" type="text" placeholder="Project name (optional)" />
+              <select id="projectSelector"><option value="">No project selected</option></select>
+              <textarea id="specEditor" spellcheck="false">{
+  "title": "A fictional Vietnamese king greets the ruler",
+  "style": "3D cartoon, warm cinematic lighting",
+  "scene": { "duration_seconds": 8, "fps": 24 },
+  "camera": { "shot": "medium", "movement": "slow_push_in" },
+  "animation": { "action": "greet", "emotion": "warm and dignified" },
+  "output": { "resolution": [1280, 720], "format": "mp4" },
+  "shots": [
+    {
+      "title": "Opening wide shot",
+      "scene": { "duration_seconds": 3, "fps": 24 },
+      "camera": { "shot": "wide", "movement": "static" },
+      "animation": { "action": "wave", "emotion": "warm and dignified" },
+      "output": { "resolution": [1280, 720], "format": "mp4" }
+    },
+    {
+      "title": "Close greeting",
+      "scene": { "duration_seconds": 5, "fps": 24 },
+      "camera": { "shot": "close", "movement": "slow_push_in" },
+      "animation": { "action": "salute", "emotion": "royal and calm" },
+      "output": { "resolution": [1280, 720], "format": "mp4" }
+    }
+  ],
+  "transition": "cut"
+}</textarea>
+            </div>
+            <div class="controls">
+              <button class="btn primary" id="parsePromptButton">Use prompt → spec</button>
+              <button class="btn" id="resetExampleBtn">Reset example</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-header"><h2>Render result</h2><span class="chip" id="statusBadge">idle</span></div>
+          <div class="panel-body">
+            <div id="preview" class="preview placeholder">No render yet.<br>Send a prompt or render a Scene Spec.</div>
+            <div class="status-box">
+              <div><strong id="renderTitle">No active job</strong></div>
+              <div id="currentStatus" class="badge queued">idle</div>
+            </div>
+            <div class="progress"><div id="progressBar" class="progress-bar"></div></div>
+            <div class="job-details" id="jobDetails" style="margin-top:12px;">Sẵn sàng.</div>
+            <div class="link-row" id="actionLinks" style="margin-top:12px;"></div>
+          </div>
+        </section>
+      </div>
+
+      <div class="panel" style="margin-top:20px;">
+        <div class="panel-header"><h2>History</h2><span class="chip">Latest jobs</span></div>
+        <div class="panel-body history-grid" id="historyPanel"></div>
+      </div>
+    </main>
+  </div>
+
   <script>
-    const example = {
-      title: "A fictional Vietnamese king greets the camera",
-      style: "3D cartoon, soft shapes, warm cinematic lighting",
-      scene: { duration_seconds: 6, fps: 24 },
-      camera: { shot: "medium", movement: "static" },
-      animation: { action: "wave", emotion: "warm and dignified" },
-      output: { resolution: [1280, 720], format: "mp4" }
+    const state = { selectedProjectId: '', projects: [], jobs: [], activeJobId: null };
+    const projectListEl = document.getElementById('projectList');
+    const jobListEl = document.getElementById('jobList');
+    const projectSelector = document.getElementById('projectSelector');
+    const specEditor = document.getElementById('specEditor');
+    const historyPanel = document.getElementById('historyPanel');
+    const actionLinks = document.getElementById('actionLinks');
+    const projectNameTag = document.getElementById('projectNameTag');
+    const progressBar = document.getElementById('progressBar');
+    const currentStatus = document.getElementById('currentStatus');
+    const renderTitle = document.getElementById('renderTitle');
+    const jobDetails = document.getElementById('jobDetails');
+    const preview = document.getElementById('preview');
+
+    const sample = {
+      title: 'A fictional Vietnamese king greets the court',
+      style: '3D cartoon, warm cinematic lighting',
+      scene: { duration_seconds: 8, fps: 24 },
+      camera: { shot: 'medium', movement: 'slow_push_in' },
+      animation: { action: 'greet', emotion: 'warm and dignified' },
+      output: { resolution: [1280, 720], format: 'mp4' },
+      shots: [
+        { title: 'Intro shot', scene: { duration_seconds: 3, fps: 24 }, camera: { shot: 'wide', movement: 'static' }, animation: { action: 'wave', emotion: 'warm and dignified' }, output: { resolution: [1280, 720], format: 'mp4' } },
+        { title: 'Close-up greeting', scene: { duration_seconds: 5, fps: 24 }, camera: { shot: 'close', movement: 'slow_push_in' }, animation: { action: 'salute', emotion: 'royal and calm' }, output: { resolution: [1280, 720], format: 'mp4' } }
+      ],
+      transition: 'cut'
     };
-    const editor = document.querySelector("#spec");
-    const renderButton = document.querySelector("#render");
-    const badge = document.querySelector("#badge");
-    const message = document.querySelector("#message");
-    const progress = document.querySelector("#progress");
-    const download = document.querySelector("#download");
-    let pollTimer;
-    editor.value = JSON.stringify(example, null, 2);
 
-    function setStatus(status, text, percent) {
-      badge.textContent = status;
-      badge.className = `badge ${status}`;
-      message.textContent = text;
-      progress.style.width = `${percent}%`;
-      document.querySelector("#statusTitle").textContent = status === "running" ? "Blender đang render" : status === "queued" ? "Job đã được xếp hàng" : status === "succeeded" ? "Render hoàn tất" : status === "failed" ? "Render thất bại" : "Chưa có job";
+    function setStatus(status, text, pct = 0) {
+      currentStatus.textContent = status;
+      currentStatus.className = 'badge ' + status;
+      jobDetails.textContent = text;
+      progressBar.style.width = pct + '%';
     }
 
-    async function checkHealth() {
-      const dot = document.querySelector("#healthDot");
-      const text = document.querySelector("#healthText");
-      try {
-        const response = await fetch("/health");
-        const health = await response.json();
-        dot.className = `dot ${health.blender_available ? "ok" : "bad"}`;
-        text.textContent = health.blender_available ? "Blender worker sẵn sàng" : "Không tìm thấy Blender — cấu hình BLENDER_BIN";
-      } catch (_) {
-        dot.className = "dot bad";
-        text.textContent = "Không kết nối được API";
+    function renderProjectList() {
+      projectListEl.innerHTML = '';
+      if (!state.projects.length) {
+        projectListEl.innerHTML = '<div class="meta">No projects yet.</div>';
+        return;
+      }
+      state.projects.forEach(project => {
+        const row = document.createElement('button');
+        row.className = 'project-item ' + (project.id === state.selectedProjectId ? 'active' : '');
+        row.innerHTML = `<div><strong>${project.name}</strong></div><div class="meta">${new Date(project.created_at).toLocaleDateString()}</div>`;
+        row.onclick = () => {
+          state.selectedProjectId = project.id;
+          renderProjectList();
+          renderProjectSelector();
+          loadJobs();
+        };
+        projectListEl.appendChild(row);
+      });
+      const active = state.projects.find(p => p.id === state.selectedProjectId);
+      projectNameTag.textContent = active ? active.name : 'No project';
+    }
+
+    function renderProjectSelector() {
+      projectSelector.innerHTML = '<option value="">No project selected</option>';
+      state.projects.forEach(project => {
+        const option = document.createElement('option');
+        option.value = project.id;
+        option.textContent = project.name;
+        option.selected = project.id === state.selectedProjectId;
+        projectSelector.appendChild(option);
+      });
+    }
+
+    function renderJobList() {
+      jobListEl.innerHTML = '';
+      const jobs = state.jobs.slice(0, 6);
+      jobs.forEach(job => {
+        const item = document.createElement('button');
+        item.className = 'job-item';
+        item.innerHTML = `<div><strong>${job.id.slice(0, 8)}</strong></div><div class="meta">${job.status}</div>`;
+        item.onclick = () => { state.activeJobId = job.id; showActiveJob(job); };
+        jobListEl.appendChild(item);
+      });
+    }
+
+    function showActiveJob(job) {
+      renderTitle.textContent = `${job.id.slice(0, 8)} • ${job.status}`;
+      setStatus(job.status, job.error || `Attempt ${job.attempt}.` || 'Job loaded.', job.status === 'succeeded' ? 100 : job.status === 'running' ? 60 : job.status === 'failed' ? 100 : 20);
+      if (job.output) {
+        actionLinks.innerHTML = `<a class="chip" href="/jobs/${job.id}/output" target="_blank">Download MP4</a><a class="chip" href="/jobs/${job.id}/log" target="_blank">View log</a><a class="chip" href="/jobs/${job.id}/package" target="_blank">Package ZIP</a>`;
+        preview.innerHTML = `<video controls autoplay loop src="/jobs/${job.id}/output"></video>`;
+        preview.classList.remove('placeholder');
+      } else {
+        actionLinks.innerHTML = `<a class="chip" href="/jobs/${job.id}/log" target="_blank">View log</a>`;
+        preview.innerHTML = 'No render output yet.';
+        preview.classList.add('placeholder');
       }
     }
 
-    async function pollJob(id) {
-      try {
-        const response = await fetch(`/jobs/${id}`);
-        const job = await response.json();
-        if (!response.ok) throw new Error(job.detail || "Không đọc được trạng thái job");
-        document.querySelector("#jobMeta").textContent = `Job ${id.slice(0, 8)}`;
-        if (job.status === "succeeded") {
-          clearInterval(pollTimer);
-          renderButton.disabled = false;
-          setStatus("succeeded", "Video đã render thành công.", 100);
-          download.href = `/jobs/${id}/output`;
-          download.classList.add("show");
-          document.querySelector("#preview").innerHTML = `<video controls autoplay loop src="/jobs/${id}/output"></video>`;
-        } else if (job.status === "failed") {
-          clearInterval(pollTimer);
-          renderButton.disabled = false;
-          setStatus("failed", job.error || "Blender worker không thể hoàn tất render.", 100);
-        } else {
-          setStatus(job.status, job.status === "running" ? "Đang dựng scene và render video…" : "Đang chờ Blender worker…", job.status === "running" ? 55 : 12);
-        }
-      } catch (error) {
-        clearInterval(pollTimer);
-        renderButton.disabled = false;
-        setStatus("failed", error.message, 100);
+    async function api(path, options = {}) {
+      const response = await fetch(path, {
+        headers: { 'Content-Type': 'application/json' },
+        ...options
+      });
+      const text = await response.text();
+      if (!text) return null;
+      const data = JSON.parse(text);
+      if (!response.ok) {
+        throw new Error(data.detail || JSON.stringify(data));
+      }
+      return data;
+    }
+
+    async function loadProjects() {
+      const projects = await api('/projects');
+      state.projects = projects || [];
+      if (!state.selectedProjectId && state.projects.length) {
+        state.selectedProjectId = state.projects[0].id;
+      }
+      renderProjectList();
+      renderProjectSelector();
+      projectSelector.value = state.selectedProjectId;
+    }
+
+    async function loadJobs() {
+      const url = state.selectedProjectId ? `/jobs?project_id=${encodeURIComponent(state.selectedProjectId)}` : '/jobs';
+      const jobs = await api(url);
+      state.jobs = jobs || [];
+      renderJobList();
+      historyPanel.innerHTML = '';
+      state.jobs.slice(0, 10).forEach(job => {
+        const item = document.createElement('div');
+        item.className = 'history-item';
+        item.innerHTML = `
+          <div class="history-row">
+            <div>
+              <div class="history-name">${job.id.slice(0, 8)}</div>
+              <div class="history-status">${new Date(job.created_at).toLocaleString()} • ${job.status}</div>
+            </div>
+            <span class="badge ${job.status}">${job.status}</span>
+          </div>
+          <div class="link-row">
+            <a class="chip" href="/jobs/${job.id}" target="_blank">Open</a>
+            ${job.output ? `<a class="chip" href="/jobs/${job.id}/output" target="_blank">MP4</a>` : ''}
+            <a class="chip" href="/jobs/${job.id}/log" target="_blank">Log</a>
+          </div>
+        `;
+        item.onclick = () => showActiveJob(job);
+        historyPanel.appendChild(item);
+      });
+      if (state.activeJobId) {
+        const active = state.jobs.find(j => j.id === state.activeJobId);
+        if (active) showActiveJob(active);
       }
     }
 
-    renderButton.addEventListener("click", async () => {
-      clearInterval(pollTimer);
-      download.classList.remove("show");
-      try {
-        const sceneSpec = JSON.parse(editor.value);
-        renderButton.disabled = true;
-        setStatus("queued", "Đang gửi Scene Spec đến API…", 8);
-        const response = await fetch("/jobs", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(sceneSpec) });
-        const result = await response.json();
-        if (!response.ok) {
-          const detail = Array.isArray(result.detail) ? result.detail.map(item => `${item.loc.join(".")}: ${item.msg}`).join("; ") : result.detail;
-          throw new Error(detail || "Không tạo được job");
-        }
-        await pollJob(result.id);
-        pollTimer = setInterval(() => pollJob(result.id), 2000);
-      } catch (error) {
-        renderButton.disabled = false;
-        setStatus("failed", error instanceof SyntaxError ? "JSON không hợp lệ. Hãy kiểm tra dấu ngoặc và dấu phẩy." : error.message, 100);
+    async function createProject() {
+      const name = prompt('Project name', 'New rendering project');
+      if (!name) return;
+      const project = await api('/projects', { method: 'POST', body: JSON.stringify({ name }) });
+      state.selectedProjectId = project.id;
+      await loadProjects();
+      await loadJobs();
+    }
+
+    async function planFromPrompt() {
+      const prompt = prompt('Describe your scene', 'Vua hoạt hình chào camera trong cung điện, 8 giây, camera tiến gần');
+      if (!prompt) return;
+      const result = await api('/plan', { method: 'POST', body: JSON.stringify({ prompt }) });
+      specEditor.value = JSON.stringify(result.spec, null, 2);
+      setStatus('queued', 'Prompt converted to Scene Spec.', 12);
+    }
+
+    async function renderCurrentSpec() {
+      const spec = JSON.parse(specEditor.value);
+      const query = state.selectedProjectId ? `?project_id=${encodeURIComponent(state.selectedProjectId)}` : '';
+      const job = await api(`/jobs${query}`, { method: 'POST', body: JSON.stringify(spec) });
+      state.activeJobId = job.id;
+      setStatus('queued', 'Job created; waiting for Blender worker.', 15);
+      renderTitle.textContent = `Job ${job.id.slice(0, 8)}`;
+      await loadJobs();
+      pollJob(job.id);
+    }
+
+    async function pollJob(jobId) {
+      const job = await api(`/jobs/${jobId}`);
+      if (!job) return;
+      state.activeJobId = job.id;
+      renderTitle.textContent = `Job ${job.id.slice(0, 8)}`;
+      if (job.status === 'succeeded') {
+        setStatus('succeeded', `Render complete. Output ready for download.`, 100);
+        showActiveJob(job);
+        return;
       }
+      if (job.status === 'failed') {
+        setStatus('failed', job.error || 'Render failed.', 100);
+        showActiveJob(job);
+        return;
+      }
+      setStatus(job.status, job.status === 'running' ? 'Blender is rendering the scene.' : 'Queued in local job list.', job.status === 'running' ? 60 : 20);
+      showActiveJob(job);
+      setTimeout(() => pollJob(jobId), 2500);
+    }
+
+    document.getElementById('createProjectBtn').addEventListener('click', createProject);
+    document.getElementById('renderBtn').addEventListener('click', renderCurrentSpec);
+    document.getElementById('planBtn').addEventListener('click', planFromPrompt);
+    document.getElementById('resetExampleBtn').addEventListener('click', () => { specEditor.value = JSON.stringify(sample, null, 2); });
+    document.getElementById('parsePromptButton').addEventListener('click', planFromPrompt);
+    projectSelector.addEventListener('change', (e) => {
+      state.selectedProjectId = e.target.value;
+      renderProjectList();
+      loadJobs();
     });
-    document.querySelector("#reset").addEventListener("click", () => { editor.value = JSON.stringify(example, null, 2); });
-    checkHealth();
+
+    specEditor.value = JSON.stringify(sample, null, 2);
+    loadProjects().then(loadJobs).catch(error => { console.error(error); });
   </script>
 </body>
 </html>
